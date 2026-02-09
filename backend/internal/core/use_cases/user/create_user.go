@@ -10,10 +10,10 @@ import (
 
 
 type CreateUserInput struct {
-	Name string `json:"name" validate:"required"`
-	Email string `json:"email" validate:"required,email"`
-	Username string `json:"username" validate:"required"`
-	Password string `json:"password" validate:"required"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 type CreateUserOutput struct {

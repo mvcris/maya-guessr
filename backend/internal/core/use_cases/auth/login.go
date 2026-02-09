@@ -9,6 +9,8 @@ import (
 	"github.com/mvcris/maya-guessr/backend/internal/core/services"
 )
 
+var ErrInvalidCredentials = errors.New("invalid email or password")
+
 type LoginInput struct {
 	Email string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required"`
@@ -35,10 +37,10 @@ func (uc *LoginUseCase) Execute(input LoginInput) (LoginOutput, error) {
 		return LoginOutput{}, err
 	}
 	if user == nil {
-		return LoginOutput{}, errors.New("invalid email or password")
+		return LoginOutput{}, ErrInvalidCredentials
 	}
 	if err := user.ComparePassword(input.Password); err != nil {
-		return LoginOutput{}, errors.New("invalid email or password")
+		return LoginOutput{}, ErrInvalidCredentials
 	}
 	refreshTokenEntity := entities.NewRefreshToken(user.ID, time.Now().Add(time.Hour * 24 * 7))
 	if err := uc.refreshTokenRepository.Create(refreshTokenEntity); err != nil {

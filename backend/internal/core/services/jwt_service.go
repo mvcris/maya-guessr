@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"os"
 	"time"
 
@@ -8,7 +9,9 @@ import (
 )
 
 
-type JwtService struct {}
+type JwtService struct {
+	secretKey []byte
+}
 
 type AccessTokenClaims struct {
 	jwt.RegisteredClaims
@@ -26,11 +29,11 @@ func NewJwtService() *JwtService {
 	if secretKey == "" {
 		panic("JWT_SECRET_KEY is not set")
 	}
-	return &JwtService{}
+	return &JwtService{secretKey: []byte(secretKey)}
 }
 
 func (s *JwtService) GetSecretKey() []byte {
-	return []byte(os.Getenv("JWT_SECRET_KEY"))
+	return s.secretKey
 }
 
 func (s *JwtService) GenerateAccessToken(userId string) (string, error) {
@@ -60,6 +63,9 @@ func (s *JwtService) GenerateRefreshToken(userId string, id string) (string, err
 
 func (s *JwtService) ValidateAccessToken(tokenString string) (*AccessTokenClaims, error) {
 	tok, err := jwt.ParseWithClaims(tokenString, &AccessTokenClaims{}, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("unexpected signing method")
+		}
 		return s.GetSecretKey(), nil
 	})
 	if err != nil {
@@ -70,6 +76,9 @@ func (s *JwtService) ValidateAccessToken(tokenString string) (*AccessTokenClaims
 
 func (s *JwtService) ValidateRefreshToken(tokenString string) (*RefreshTokenClaims, error) {
 	tok, err := jwt.ParseWithClaims(tokenString, &RefreshTokenClaims{}, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("unexpected signing method")
+		}
 		return s.GetSecretKey(), nil
 	})
 	if err != nil {
