@@ -1,14 +1,13 @@
 package handlers
 
 import (
-	"errors"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/mvcris/maya-guessr/backend/internal/core/services"
 	"github.com/mvcris/maya-guessr/backend/internal/core/use_cases/auth"
 	"github.com/mvcris/maya-guessr/backend/internal/infrastructure/gorm/repositories"
+	httppkg "github.com/mvcris/maya-guessr/backend/internal/interfaces/http"
 	"github.com/mvcris/maya-guessr/backend/internal/interfaces/http/dtos"
 	"gorm.io/gorm"
 )
@@ -37,12 +36,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		Password: input.Password,
 	})
 	if err != nil {
-		if errors.Is(err, auth.ErrInvalidCredentials) {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid email or password"})
-			return
-		}
-		log.Printf("login: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		httppkg.RespondError(c, err)
 		return
 	}
 	c.JSON(http.StatusOK, output)

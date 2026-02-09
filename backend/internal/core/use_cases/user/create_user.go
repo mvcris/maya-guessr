@@ -1,10 +1,10 @@
 package user
 
 import (
-	"errors"
 	"time"
 
 	"github.com/mvcris/maya-guessr/backend/internal/core/entities"
+	coreerrors "github.com/mvcris/maya-guessr/backend/internal/core/errors"
 	"github.com/mvcris/maya-guessr/backend/internal/core/repositories"
 )
 
@@ -38,15 +38,15 @@ func (uc *CreateUserUseCase) Execute(input CreateUserInput) (CreateUserOutput, e
 		return CreateUserOutput{}, err
 	}
 	if existingUserByEmail != nil {
-		return CreateUserOutput{}, errors.New("user with email already exists")
+		return CreateUserOutput{}, coreerrors.Conflict("user with email already exists")
 	}
-	
+
 	existingUserByUsername, err := uc.userRepository.FindByUsername(input.Username)
 	if err != nil {
 		return CreateUserOutput{}, err
 	}
 	if existingUserByUsername != nil {
-		return CreateUserOutput{}, errors.New("user with username already exists")
+		return CreateUserOutput{}, coreerrors.Conflict("user with username already exists")
 	}
 	
 	newUser := entities.NewUser(input.Name, input.Email, input.Username, input.Password)
