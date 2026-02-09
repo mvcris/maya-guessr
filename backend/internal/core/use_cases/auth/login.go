@@ -1,15 +1,13 @@
 package auth
 
 import (
-	"errors"
 	"time"
 
 	"github.com/mvcris/maya-guessr/backend/internal/core/entities"
+	coreerrors "github.com/mvcris/maya-guessr/backend/internal/core/errors"
 	"github.com/mvcris/maya-guessr/backend/internal/core/repositories"
 	"github.com/mvcris/maya-guessr/backend/internal/core/services"
 )
-
-var ErrInvalidCredentials = errors.New("invalid email or password")
 
 type LoginInput struct {
 	Email string `json:"email" validate:"required,email"`
@@ -37,10 +35,10 @@ func (uc *LoginUseCase) Execute(input LoginInput) (LoginOutput, error) {
 		return LoginOutput{}, err
 	}
 	if user == nil {
-		return LoginOutput{}, ErrInvalidCredentials
+		return LoginOutput{}, coreerrors.Unauthorized("invalid email or password")
 	}
 	if err := user.ComparePassword(input.Password); err != nil {
-		return LoginOutput{}, ErrInvalidCredentials
+		return LoginOutput{}, coreerrors.Unauthorized("invalid email or password")
 	}
 	refreshTokenEntity := entities.NewRefreshToken(user.ID, time.Now().Add(time.Hour * 24 * 7))
 	if err := uc.refreshTokenRepository.Create(refreshTokenEntity); err != nil {

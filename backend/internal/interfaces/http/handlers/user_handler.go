@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/mvcris/maya-guessr/backend/internal/core/use_cases/user"
 	"github.com/mvcris/maya-guessr/backend/internal/infrastructure/gorm/repositories"
+	httppkg "github.com/mvcris/maya-guessr/backend/internal/interfaces/http"
 	"github.com/mvcris/maya-guessr/backend/internal/interfaces/http/dtos"
 	"gorm.io/gorm"
 )
@@ -36,7 +37,7 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 		Password: input.Password,
 	})
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		httppkg.RespondError(c, err)
 		return
 	}
 	c.JSON(http.StatusOK, output)
