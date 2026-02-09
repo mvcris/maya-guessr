@@ -46,7 +46,7 @@ func AuthMiddleware(jwtService *services.JwtService) gin.HandlerFunc {
 			return
 		}
 
-		tokenString := parts[1]
+		tokenString := strings.TrimSpace(parts[1])
 		claims, err := jwtService.ValidateAccessToken(tokenString)
 		if err != nil {
 			httppkg.RespondError(c, coreerrors.Unauthorized("invalid or missing token"))
