@@ -29,6 +29,10 @@ func main() {
 	authHandler := handlers.NewAuthHandler(db, router)
 	authHandler.SetupRoutes()
 
+	// maps routes
+	mapHandler := handlers.NewMapHandler(db, router)
+	mapHandler.SetupRoutes()
+
 	if err := router.Run(":8080"); err != nil {
 		log.Fatalf("failed to start server: %v", err)
 	}

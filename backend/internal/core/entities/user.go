@@ -17,6 +17,7 @@ type User struct {
 	CreatedAt time.Time `json:"created_at" gorm:"autoCreateTime;type:timestamptz"`
 	UpdatedAt time.Time `json:"updated_at" gorm:"autoUpdateTime;type:timestamptz"`
 	DeletedAt gorm.DeletedAt `json:"deleted_at" gorm:"index;type:timestamptz"`
+	Maps []*Map `json:"maps" gorm:"foreignKey:OwnerId"`
 }
 
 func (User) TableName() string {
