@@ -1,6 +1,8 @@
 package user
 
 import (
+	"context"
+
 	"github.com/mvcris/maya-guessr/backend/internal/core/entities"
 	coreerrors "github.com/mvcris/maya-guessr/backend/internal/core/errors"
 	"github.com/mvcris/maya-guessr/backend/internal/core/repositories"
@@ -15,7 +17,9 @@ func NewGetMeUseCase(userRepository repositories.UserRepository) *GetMeUseCase {
 }
 
 func (uc *GetMeUseCase) Execute(userID string) (*entities.User, error) {
-	user, err := uc.userRepository.FindById(userID)
+	ctx := context.Background()
+
+	user, err := uc.userRepository.FindById(ctx, userID)
 	if err != nil {
 		return nil, err
 	}

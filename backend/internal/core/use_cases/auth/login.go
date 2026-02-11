@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"context"
 	"time"
 
 	"github.com/mvcris/maya-guessr/backend/internal/core/entities"
@@ -30,7 +31,9 @@ func NewLoginUseCase(userRepository repositories.UserRepository, refreshTokenRep
 }
 
 func (uc *LoginUseCase) Execute(input LoginInput) (LoginOutput, error) {
-	user, err := uc.userRepository.FindByEmail(input.Email)
+	ctx := context.Background()
+
+	user, err := uc.userRepository.FindByEmail(ctx, input.Email)
 	if err != nil {
 		return LoginOutput{}, err
 	}
@@ -40,8 +43,8 @@ func (uc *LoginUseCase) Execute(input LoginInput) (LoginOutput, error) {
 	if err := user.ComparePassword(input.Password); err != nil {
 		return LoginOutput{}, coreerrors.Unauthorized("invalid email or password")
 	}
-	refreshTokenEntity := entities.NewRefreshToken(user.ID, time.Now().Add(time.Hour * 24 * 7))
-	if err := uc.refreshTokenRepository.Create(refreshTokenEntity); err != nil {
+	refreshTokenEntity := entities.NewRefreshToken(user.ID, time.Now().Add(time.Hour*24*7))
+	if err := uc.refreshTokenRepository.Create(ctx, refreshTokenEntity); err != nil {
 		return LoginOutput{}, err
 	}
 	accessToken, err := uc.jwtService.GenerateAccessToken(user.ID)
@@ -52,9 +55,9 @@ func (uc *LoginUseCase) Execute(input LoginInput) (LoginOutput, error) {
 	if err != nil {
 		return LoginOutput{}, err
 	}
-	
+
 	return LoginOutput{
-		AccessToken: accessToken,
+		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 	}, nil
 }

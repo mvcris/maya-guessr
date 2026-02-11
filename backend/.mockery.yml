@@ -16,3 +16,6 @@ packages:
   github.com/mvcris/maya-guessr/backend/internal/core/repositories:
     config:
       all: true
+  github.com/mvcris/maya-guessr/backend/internal/core/transactions:
+    config:
+      all: true

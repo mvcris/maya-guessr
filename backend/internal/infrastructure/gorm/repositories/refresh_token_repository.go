@@ -1,10 +1,12 @@
 package repositories
 
 import (
+	"context"
 	"errors"
 
 	"github.com/mvcris/maya-guessr/backend/internal/core/entities"
 	"github.com/mvcris/maya-guessr/backend/internal/core/repositories"
+	localgorm "github.com/mvcris/maya-guessr/backend/internal/infrastructure/gorm"
 	"gorm.io/gorm"
 )
 
@@ -16,13 +18,20 @@ func NewRefreshTokenPgRepository(db *gorm.DB) repositories.RefreshTokenRepositor
 	return &RefreshTokenPgRepository{db: db}
 }
 
-func (r *RefreshTokenPgRepository) Create(refreshToken *entities.RefreshToken) error {
-	return r.db.Create(refreshToken).Error
+func (r *RefreshTokenPgRepository) getDB(ctx context.Context) *gorm.DB {
+	if tx, ok := localgorm.ExtractTx(ctx); ok {
+		return tx
+	}
+	return r.db
 }
 
-func (r *RefreshTokenPgRepository) FindById(id string) (*entities.RefreshToken, error) {
+func (r *RefreshTokenPgRepository) Create(ctx context.Context, refreshToken *entities.RefreshToken) error {
+	return r.getDB(ctx).Create(refreshToken).Error
+}
+
+func (r *RefreshTokenPgRepository) FindById(ctx context.Context, id string) (*entities.RefreshToken, error) {
 	var refreshToken entities.RefreshToken
-	if err := r.db.Where("id = ?", id).First(&refreshToken).Error; err != nil {
+	if err := r.getDB(ctx).Where("id = ?", id).First(&refreshToken).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
@@ -31,6 +40,6 @@ func (r *RefreshTokenPgRepository) FindById(id string) (*entities.RefreshToken, 
 	return &refreshToken, nil
 }
 
-func (r *RefreshTokenPgRepository) Update(refreshToken *entities.RefreshToken) error {
-	return r.db.Save(refreshToken).Error
+func (r *RefreshTokenPgRepository) Update(ctx context.Context, refreshToken *entities.RefreshToken) error {
+	return r.getDB(ctx).Save(refreshToken).Error
 }

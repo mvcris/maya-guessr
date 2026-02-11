@@ -1,8 +1,12 @@
 package repositories
 
-import "github.com/mvcris/maya-guessr/backend/internal/core/entities"
+import (
+	"context"
+
+	"github.com/mvcris/maya-guessr/backend/internal/core/entities"
+)
 
 type MapRepository interface {
-	Create(m *entities.Map) error
-	FindByName(name string) (*entities.Map, error)
+	Create(ctx context.Context, m *entities.Map) error
+	FindByName(ctx context.Context, name string) (*entities.Map, error)
 }

@@ -1,6 +1,7 @@
 package user
 
 import (
+	"context"
 	"errors"
 	"testing"
 	"time"
@@ -32,17 +33,17 @@ func (s *CreateUserSuite) TestExecute_WhenUserDoesNotExist_CreatesAndReturnsUser
 	}
 
 	mockRepo.EXPECT().
-		FindByEmail(input.Email).
+		FindByEmail(mock.Anything, input.Email).
 		Return((*entities.User)(nil), nil)
 	mockRepo.EXPECT().
-		FindByUsername(input.Username).
+		FindByUsername(mock.Anything, input.Username).
 		Return((*entities.User)(nil), nil)
 	mockRepo.EXPECT().
-		Create(mock.MatchedBy(func(u *entities.User) bool {
+		Create(mock.Anything, mock.MatchedBy(func(u *entities.User) bool {
 			return u.Name == input.Name && u.Email == input.Email &&
 				u.Username == input.Username && u.Password != input.Password
 		})).
-		RunAndReturn(func(u *entities.User) error {
+		RunAndReturn(func(_ context.Context, u *entities.User) error {
 			u.ID = "generated-uuid"
 			u.CreatedAt = time.Date(2025, 2, 9, 12, 0, 0, 0, time.UTC)
 			return nil
@@ -71,7 +72,7 @@ func (s *CreateUserSuite) TestExecute_WhenEmailAlreadyExists_ReturnsError() {
 	existingUser := entities.RestoreUser("id-1", "Existing", "existing@example.com", "existing", "hash")
 
 	mockRepo.EXPECT().
-		FindByEmail(input.Email).
+		FindByEmail(mock.Anything, input.Email).
 		Return(existingUser, nil)
 
 	output, err := uc.Execute(input)
@@ -94,10 +95,10 @@ func (s *CreateUserSuite) TestExecute_WhenUsernameAlreadyExists_ReturnsError() {
 	existingUser := entities.RestoreUser("id-1", "Other", "other@example.com", "taken", "hash")
 
 	mockRepo.EXPECT().
-		FindByEmail(input.Email).
+		FindByEmail(mock.Anything, input.Email).
 		Return((*entities.User)(nil), nil)
 	mockRepo.EXPECT().
-		FindByUsername(input.Username).
+		FindByUsername(mock.Anything, input.Username).
 		Return(existingUser, nil)
 
 	output, err := uc.Execute(input)
@@ -120,7 +121,7 @@ func (s *CreateUserSuite) TestExecute_WhenFindByEmailFails_ReturnsError() {
 	findErr := errMock
 
 	mockRepo.EXPECT().
-		FindByEmail(input.Email).
+		FindByEmail(mock.Anything, input.Email).
 		Return((*entities.User)(nil), findErr)
 
 	output, err := uc.Execute(input)
@@ -143,10 +144,10 @@ func (s *CreateUserSuite) TestExecute_WhenFindByUsernameFails_ReturnsError() {
 	findErr := errMock
 
 	mockRepo.EXPECT().
-		FindByEmail(input.Email).
+		FindByEmail(mock.Anything, input.Email).
 		Return((*entities.User)(nil), nil)
 	mockRepo.EXPECT().
-		FindByUsername(input.Username).
+		FindByUsername(mock.Anything, input.Username).
 		Return((*entities.User)(nil), findErr)
 
 	output, err := uc.Execute(input)
@@ -169,13 +170,13 @@ func (s *CreateUserSuite) TestExecute_WhenCreateFails_ReturnsError() {
 	createErr := errMock
 
 	mockRepo.EXPECT().
-		FindByEmail(input.Email).
+		FindByEmail(mock.Anything, input.Email).
 		Return((*entities.User)(nil), nil)
 	mockRepo.EXPECT().
-		FindByUsername(input.Username).
+		FindByUsername(mock.Anything, input.Username).
 		Return((*entities.User)(nil), nil)
 	mockRepo.EXPECT().
-		Create(mock.MatchedBy(func(u *entities.User) bool {
+		Create(mock.Anything, mock.MatchedBy(func(u *entities.User) bool {
 			return u.Email == input.Email && u.Username == input.Username
 		})).
 		Return(createErr)

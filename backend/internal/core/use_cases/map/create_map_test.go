@@ -1,6 +1,7 @@
 package mapuc
 
 import (
+	"context"
 	"errors"
 	"testing"
 	"time"
@@ -8,6 +9,7 @@ import (
 	"github.com/mvcris/maya-guessr/backend/internal/core/entities"
 	"github.com/mvcris/maya-guessr/backend/internal/core/repositories"
 	repomocks "github.com/mvcris/maya-guessr/backend/internal/core/repositories/mocks"
+	txmocks "github.com/mvcris/maya-guessr/backend/internal/core/transactions/mocks"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 )
@@ -20,10 +22,20 @@ func TestCreateMapSuite(t *testing.T) {
 	suite.Run(t, new(CreateMapSuite))
 }
 
+// passThroughTx makes the mock txManager execute the function directly (no real tx).
+func passThroughTx(mockTx *txmocks.MockTransactionManager) {
+	mockTx.EXPECT().
+		RunInTransaction(mock.Anything, mock.Anything).
+		RunAndReturn(func(ctx context.Context, fn func(context.Context) error) error {
+			return fn(ctx)
+		})
+}
+
 func (s *CreateMapSuite) TestExecute_WhenMapDoesNotExist_CreatesAndReturnsMap() {
 	mockMapRepo := repomocks.NewMockMapRepository(s.T())
 	mockLocationRepo := repomocks.NewMockLocationRepository(s.T())
-	uc := NewCreateMapUseCase(mockMapRepo, mockLocationRepo)
+	mockTx := txmocks.NewMockTransactionManager(s.T())
+	uc := NewCreateMapUseCase(mockMapRepo, mockLocationRepo, mockTx)
 
 	input := CreateMapInput{
 		Name:        "My Map",
@@ -38,30 +50,31 @@ func (s *CreateMapSuite) TestExecute_WhenMapDoesNotExist_CreatesAndReturnsMap() 
 	createdAt := time.Date(2025, 2, 9, 12, 0, 0, 0, time.UTC)
 
 	mockMapRepo.EXPECT().
-		FindByName(input.Name).
+		FindByName(mock.Anything, input.Name).
 		Return((*entities.Map)(nil), nil)
+	passThroughTx(mockTx)
 	mockMapRepo.EXPECT().
-		Create(mock.MatchedBy(func(m *entities.Map) bool {
+		Create(mock.Anything, mock.MatchedBy(func(m *entities.Map) bool {
 			return m.Name == input.Name && m.Description == input.Description && m.OwnerId == input.OwnerId
 		})).
-		RunAndReturn(func(m *entities.Map) error {
+		RunAndReturn(func(_ context.Context, m *entities.Map) error {
 			m.ID = "map-uuid-123"
 			m.CreatedAt = createdAt
 			return nil
 		})
 	mockLocationRepo.EXPECT().
-		Create(mock.MatchedBy(func(l *entities.Location) bool {
+		Create(mock.Anything, mock.MatchedBy(func(l *entities.Location) bool {
 			return l.PanoId == "pano-1" && l.MapId == "map-uuid-123"
 		})).
-		RunAndReturn(func(l *entities.Location) error {
+		RunAndReturn(func(_ context.Context, l *entities.Location) error {
 			l.ID = "loc-uuid-1"
 			return nil
 		})
 	mockLocationRepo.EXPECT().
-		Create(mock.MatchedBy(func(l *entities.Location) bool {
+		Create(mock.Anything, mock.MatchedBy(func(l *entities.Location) bool {
 			return l.PanoId == "pano-2" && l.MapId == "map-uuid-123"
 		})).
-		RunAndReturn(func(l *entities.Location) error {
+		RunAndReturn(func(_ context.Context, l *entities.Location) error {
 			l.ID = "loc-uuid-2"
 			return nil
 		})
@@ -85,7 +98,8 @@ func (s *CreateMapSuite) TestExecute_WhenMapDoesNotExist_CreatesAndReturnsMap() 
 func (s *CreateMapSuite) TestExecute_WhenNoLocations_CreatesMapWithEmptyLocations() {
 	mockMapRepo := repomocks.NewMockMapRepository(s.T())
 	mockLocationRepo := repomocks.NewMockLocationRepository(s.T())
-	uc := NewCreateMapUseCase(mockMapRepo, mockLocationRepo)
+	mockTx := txmocks.NewMockTransactionManager(s.T())
+	uc := NewCreateMapUseCase(mockMapRepo, mockLocationRepo, mockTx)
 
 	input := CreateMapInput{
 		Name:        "Empty Map",
@@ -97,13 +111,14 @@ func (s *CreateMapSuite) TestExecute_WhenNoLocations_CreatesMapWithEmptyLocation
 	createdAt := time.Date(2025, 2, 9, 12, 0, 0, 0, time.UTC)
 
 	mockMapRepo.EXPECT().
-		FindByName(input.Name).
+		FindByName(mock.Anything, input.Name).
 		Return((*entities.Map)(nil), nil)
+	passThroughTx(mockTx)
 	mockMapRepo.EXPECT().
-		Create(mock.MatchedBy(func(m *entities.Map) bool {
+		Create(mock.Anything, mock.MatchedBy(func(m *entities.Map) bool {
 			return m.Name == input.Name
 		})).
-		RunAndReturn(func(m *entities.Map) error {
+		RunAndReturn(func(_ context.Context, m *entities.Map) error {
 			m.ID = "map-uuid"
 			m.CreatedAt = createdAt
 			return nil
@@ -119,7 +134,8 @@ func (s *CreateMapSuite) TestExecute_WhenNoLocations_CreatesMapWithEmptyLocation
 func (s *CreateMapSuite) TestExecute_WhenTooManyLocations_ReturnsBadRequest() {
 	mockMapRepo := repomocks.NewMockMapRepository(s.T())
 	mockLocationRepo := repomocks.NewMockLocationRepository(s.T())
-	uc := NewCreateMapUseCase(mockMapRepo, mockLocationRepo)
+	mockTx := txmocks.NewMockTransactionManager(s.T())
+	uc := NewCreateMapUseCase(mockMapRepo, mockLocationRepo, mockTx)
 
 	locations := make([]LocationInput, 51)
 	for i := 0; i < 51; i++ {
@@ -142,7 +158,8 @@ func (s *CreateMapSuite) TestExecute_WhenTooManyLocations_ReturnsBadRequest() {
 func (s *CreateMapSuite) TestExecute_WhenMapNameAlreadyExists_ReturnsConflict() {
 	mockMapRepo := repomocks.NewMockMapRepository(s.T())
 	mockLocationRepo := repomocks.NewMockLocationRepository(s.T())
-	uc := NewCreateMapUseCase(mockMapRepo, mockLocationRepo)
+	mockTx := txmocks.NewMockTransactionManager(s.T())
+	uc := NewCreateMapUseCase(mockMapRepo, mockLocationRepo, mockTx)
 
 	input := CreateMapInput{
 		Name:        "Existing Map",
@@ -153,7 +170,7 @@ func (s *CreateMapSuite) TestExecute_WhenMapNameAlreadyExists_ReturnsConflict() 
 	existingMap := entities.RestoreMap("id-1", "Existing Map", "desc", "other-owner")
 
 	mockMapRepo.EXPECT().
-		FindByName(input.Name).
+		FindByName(mock.Anything, input.Name).
 		Return(existingMap, nil)
 
 	output, err := uc.Execute(input)
@@ -166,7 +183,8 @@ func (s *CreateMapSuite) TestExecute_WhenMapNameAlreadyExists_ReturnsConflict() 
 func (s *CreateMapSuite) TestExecute_WhenFindByNameFails_ReturnsError() {
 	mockMapRepo := repomocks.NewMockMapRepository(s.T())
 	mockLocationRepo := repomocks.NewMockLocationRepository(s.T())
-	uc := NewCreateMapUseCase(mockMapRepo, mockLocationRepo)
+	mockTx := txmocks.NewMockTransactionManager(s.T())
+	uc := NewCreateMapUseCase(mockMapRepo, mockLocationRepo, mockTx)
 
 	input := CreateMapInput{
 		Name:        "Map",
@@ -177,7 +195,7 @@ func (s *CreateMapSuite) TestExecute_WhenFindByNameFails_ReturnsError() {
 	findErr := errMock
 
 	mockMapRepo.EXPECT().
-		FindByName(input.Name).
+		FindByName(mock.Anything, input.Name).
 		Return((*entities.Map)(nil), findErr)
 
 	output, err := uc.Execute(input)
@@ -190,7 +208,8 @@ func (s *CreateMapSuite) TestExecute_WhenFindByNameFails_ReturnsError() {
 func (s *CreateMapSuite) TestExecute_WhenMapCreateFails_ReturnsError() {
 	mockMapRepo := repomocks.NewMockMapRepository(s.T())
 	mockLocationRepo := repomocks.NewMockLocationRepository(s.T())
-	uc := NewCreateMapUseCase(mockMapRepo, mockLocationRepo)
+	mockTx := txmocks.NewMockTransactionManager(s.T())
+	uc := NewCreateMapUseCase(mockMapRepo, mockLocationRepo, mockTx)
 
 	input := CreateMapInput{
 		Name:        "Map",
@@ -201,10 +220,11 @@ func (s *CreateMapSuite) TestExecute_WhenMapCreateFails_ReturnsError() {
 	createErr := errMock
 
 	mockMapRepo.EXPECT().
-		FindByName(input.Name).
+		FindByName(mock.Anything, input.Name).
 		Return((*entities.Map)(nil), nil)
+	passThroughTx(mockTx)
 	mockMapRepo.EXPECT().
-		Create(mock.MatchedBy(func(m *entities.Map) bool {
+		Create(mock.Anything, mock.MatchedBy(func(m *entities.Map) bool {
 			return m.Name == input.Name
 		})).
 		Return(createErr)
@@ -219,7 +239,8 @@ func (s *CreateMapSuite) TestExecute_WhenMapCreateFails_ReturnsError() {
 func (s *CreateMapSuite) TestExecute_WhenLocationHasInvalidLatitude_ReturnsError() {
 	mockMapRepo := repomocks.NewMockMapRepository(s.T())
 	mockLocationRepo := repomocks.NewMockLocationRepository(s.T())
-	uc := NewCreateMapUseCase(mockMapRepo, mockLocationRepo)
+	mockTx := txmocks.NewMockTransactionManager(s.T())
+	uc := NewCreateMapUseCase(mockMapRepo, mockLocationRepo, mockTx)
 
 	input := CreateMapInput{
 		Name:        "Map",
@@ -231,13 +252,14 @@ func (s *CreateMapSuite) TestExecute_WhenLocationHasInvalidLatitude_ReturnsError
 	}
 
 	mockMapRepo.EXPECT().
-		FindByName(input.Name).
+		FindByName(mock.Anything, input.Name).
 		Return((*entities.Map)(nil), nil)
+	passThroughTx(mockTx)
 	mockMapRepo.EXPECT().
-		Create(mock.MatchedBy(func(m *entities.Map) bool {
+		Create(mock.Anything, mock.MatchedBy(func(m *entities.Map) bool {
 			return m.Name == input.Name
 		})).
-		RunAndReturn(func(m *entities.Map) error {
+		RunAndReturn(func(_ context.Context, m *entities.Map) error {
 			m.ID = "map-uuid"
 			m.CreatedAt = time.Now()
 			return nil
@@ -253,7 +275,8 @@ func (s *CreateMapSuite) TestExecute_WhenLocationHasInvalidLatitude_ReturnsError
 func (s *CreateMapSuite) TestExecute_WhenLocationHasInvalidLongitude_ReturnsError() {
 	mockMapRepo := repomocks.NewMockMapRepository(s.T())
 	mockLocationRepo := repomocks.NewMockLocationRepository(s.T())
-	uc := NewCreateMapUseCase(mockMapRepo, mockLocationRepo)
+	mockTx := txmocks.NewMockTransactionManager(s.T())
+	uc := NewCreateMapUseCase(mockMapRepo, mockLocationRepo, mockTx)
 
 	input := CreateMapInput{
 		Name:        "Map",
@@ -265,13 +288,14 @@ func (s *CreateMapSuite) TestExecute_WhenLocationHasInvalidLongitude_ReturnsErro
 	}
 
 	mockMapRepo.EXPECT().
-		FindByName(input.Name).
+		FindByName(mock.Anything, input.Name).
 		Return((*entities.Map)(nil), nil)
+	passThroughTx(mockTx)
 	mockMapRepo.EXPECT().
-		Create(mock.MatchedBy(func(m *entities.Map) bool {
+		Create(mock.Anything, mock.MatchedBy(func(m *entities.Map) bool {
 			return m.Name == input.Name
 		})).
-		RunAndReturn(func(m *entities.Map) error {
+		RunAndReturn(func(_ context.Context, m *entities.Map) error {
 			m.ID = "map-uuid"
 			m.CreatedAt = time.Now()
 			return nil
@@ -287,7 +311,8 @@ func (s *CreateMapSuite) TestExecute_WhenLocationHasInvalidLongitude_ReturnsErro
 func (s *CreateMapSuite) TestExecute_WhenLocationCreateFails_ReturnsError() {
 	mockMapRepo := repomocks.NewMockMapRepository(s.T())
 	mockLocationRepo := repomocks.NewMockLocationRepository(s.T())
-	uc := NewCreateMapUseCase(mockMapRepo, mockLocationRepo)
+	mockTx := txmocks.NewMockTransactionManager(s.T())
+	uc := NewCreateMapUseCase(mockMapRepo, mockLocationRepo, mockTx)
 
 	input := CreateMapInput{
 		Name:        "Map",
@@ -300,19 +325,20 @@ func (s *CreateMapSuite) TestExecute_WhenLocationCreateFails_ReturnsError() {
 	createErr := errMock
 
 	mockMapRepo.EXPECT().
-		FindByName(input.Name).
+		FindByName(mock.Anything, input.Name).
 		Return((*entities.Map)(nil), nil)
+	passThroughTx(mockTx)
 	mockMapRepo.EXPECT().
-		Create(mock.MatchedBy(func(m *entities.Map) bool {
+		Create(mock.Anything, mock.MatchedBy(func(m *entities.Map) bool {
 			return m.Name == input.Name
 		})).
-		RunAndReturn(func(m *entities.Map) error {
+		RunAndReturn(func(_ context.Context, m *entities.Map) error {
 			m.ID = "map-uuid"
 			m.CreatedAt = time.Now()
 			return nil
 		})
 	mockLocationRepo.EXPECT().
-		Create(mock.MatchedBy(func(l *entities.Location) bool {
+		Create(mock.Anything, mock.MatchedBy(func(l *entities.Location) bool {
 			return l.PanoId == "pano"
 		})).
 		Return(createErr)
@@ -327,7 +353,8 @@ func (s *CreateMapSuite) TestExecute_WhenLocationCreateFails_ReturnsError() {
 func (s *CreateMapSuite) TestNewCreateMapUseCase() {
 	var mapRepo repositories.MapRepository = repomocks.NewMockMapRepository(s.T())
 	var locationRepo repositories.LocationRepository = repomocks.NewMockLocationRepository(s.T())
-	uc := NewCreateMapUseCase(mapRepo, locationRepo)
+	mockTx := txmocks.NewMockTransactionManager(s.T())
+	uc := NewCreateMapUseCase(mapRepo, locationRepo, mockTx)
 	s.NotNil(uc)
 }
 

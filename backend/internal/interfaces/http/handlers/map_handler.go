@@ -7,6 +7,7 @@ import (
 	coreerrors "github.com/mvcris/maya-guessr/backend/internal/core/errors"
 	"github.com/mvcris/maya-guessr/backend/internal/core/services"
 	mapuc "github.com/mvcris/maya-guessr/backend/internal/core/use_cases/map"
+	localgorm "github.com/mvcris/maya-guessr/backend/internal/infrastructure/gorm"
 	"github.com/mvcris/maya-guessr/backend/internal/infrastructure/gorm/repositories"
 	httppkg "github.com/mvcris/maya-guessr/backend/internal/interfaces/http"
 	"github.com/mvcris/maya-guessr/backend/internal/interfaces/http/dtos"
@@ -23,9 +24,10 @@ type MapHandler struct {
 func NewMapHandler(db *gorm.DB, router *gin.Engine) *MapHandler {
 	mapRepository := repositories.NewMapPgRepository(db)
 	locationRepository := repositories.NewLocationPgRepository(db)
+	txManager := localgorm.NewGormTransactionManager(db)
 	jwtService := services.NewJwtService()
 	return &MapHandler{
-		createMapUseCase: mapuc.NewCreateMapUseCase(mapRepository, locationRepository),
+		createMapUseCase: mapuc.NewCreateMapUseCase(mapRepository, locationRepository, txManager),
 		jwtService:       jwtService,
 		router:           router,
 	}

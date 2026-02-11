@@ -43,10 +43,10 @@ func (s *LoginSuite) TestExecute_WhenCredentialsValid_ReturnsTokens() {
 	}
 
 	mockUserRepo.EXPECT().
-		FindByEmail(input.Email).
+		FindByEmail(mock.Anything, input.Email).
 		Return(user, nil)
 	mockRefreshRepo.EXPECT().
-		Create(mock.MatchedBy(func(rt *entities.RefreshToken) bool {
+		Create(mock.Anything, mock.MatchedBy(func(rt *entities.RefreshToken) bool {
 			return rt.UserId == user.ID && !rt.ExpiresAt.IsZero()
 		})).
 		Return(nil)
@@ -69,7 +69,7 @@ func (s *LoginSuite) TestExecute_WhenUserNotFound_ReturnsInvalidCredentials() {
 	}
 
 	mockUserRepo.EXPECT().
-		FindByEmail(input.Email).
+		FindByEmail(mock.Anything, input.Email).
 		Return((*entities.User)(nil), nil)
 
 	output, err := uc.Execute(input)
@@ -94,7 +94,7 @@ func (s *LoginSuite) TestExecute_WhenPasswordInvalid_ReturnsInvalidCredentials()
 	}
 
 	mockUserRepo.EXPECT().
-		FindByEmail(input.Email).
+		FindByEmail(mock.Anything, input.Email).
 		Return(user, nil)
 
 	output, err := uc.Execute(input)
@@ -116,7 +116,7 @@ func (s *LoginSuite) TestExecute_WhenFindByEmailFails_ReturnsError() {
 	findErr := errMock
 
 	mockUserRepo.EXPECT().
-		FindByEmail(input.Email).
+		FindByEmail(mock.Anything, input.Email).
 		Return((*entities.User)(nil), findErr)
 
 	output, err := uc.Execute(input)
@@ -147,10 +147,10 @@ func (s *LoginSuite) TestExecute_WhenRefreshTokenCreateFails_ReturnsError() {
 	createErr := errMock
 
 	mockUserRepo.EXPECT().
-		FindByEmail(input.Email).
+		FindByEmail(mock.Anything, input.Email).
 		Return(user, nil)
 	mockRefreshRepo.EXPECT().
-		Create(mock.MatchedBy(func(rt *entities.RefreshToken) bool {
+		Create(mock.Anything, mock.MatchedBy(func(rt *entities.RefreshToken) bool {
 			return rt.UserId == user.ID
 		})).
 		Return(createErr)
