@@ -5,6 +5,8 @@
 package repositories
 
 import (
+	"context"
+
 	"github.com/mvcris/maya-guessr/backend/internal/core/entities"
 	mock "github.com/stretchr/testify/mock"
 )
@@ -37,8 +39,8 @@ func (_m *MockLocationRepository) EXPECT() *MockLocationRepository_Expecter {
 }
 
 // CountByMapId provides a mock function for the type MockLocationRepository
-func (_mock *MockLocationRepository) CountByMapId(mapId string) (int64, error) {
-	ret := _mock.Called(mapId)
+func (_mock *MockLocationRepository) CountByMapId(ctx context.Context, mapId string) (int64, error) {
+	ret := _mock.Called(ctx, mapId)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CountByMapId")
@@ -46,16 +48,16 @@ func (_mock *MockLocationRepository) CountByMapId(mapId string) (int64, error) {
 
 	var r0 int64
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(string) (int64, error)); ok {
-		return returnFunc(mapId)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (int64, error)); ok {
+		return returnFunc(ctx, mapId)
 	}
-	if returnFunc, ok := ret.Get(0).(func(string) int64); ok {
-		r0 = returnFunc(mapId)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) int64); ok {
+		r0 = returnFunc(ctx, mapId)
 	} else {
 		r0 = ret.Get(0).(int64)
 	}
-	if returnFunc, ok := ret.Get(1).(func(string) error); ok {
-		r1 = returnFunc(mapId)
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = returnFunc(ctx, mapId)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -68,19 +70,25 @@ type MockLocationRepository_CountByMapId_Call struct {
 }
 
 // CountByMapId is a helper method to define mock.On call
+//   - ctx context.Context
 //   - mapId string
-func (_e *MockLocationRepository_Expecter) CountByMapId(mapId interface{}) *MockLocationRepository_CountByMapId_Call {
-	return &MockLocationRepository_CountByMapId_Call{Call: _e.mock.On("CountByMapId", mapId)}
+func (_e *MockLocationRepository_Expecter) CountByMapId(ctx interface{}, mapId interface{}) *MockLocationRepository_CountByMapId_Call {
+	return &MockLocationRepository_CountByMapId_Call{Call: _e.mock.On("CountByMapId", ctx, mapId)}
 }
 
-func (_c *MockLocationRepository_CountByMapId_Call) Run(run func(mapId string)) *MockLocationRepository_CountByMapId_Call {
+func (_c *MockLocationRepository_CountByMapId_Call) Run(run func(ctx context.Context, mapId string)) *MockLocationRepository_CountByMapId_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 string
+		var arg0 context.Context
 		if args[0] != nil {
-			arg0 = args[0].(string)
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 string
+		if args[1] != nil {
+			arg1 = args[1].(string)
 		}
 		run(
 			arg0,
+			arg1,
 		)
 	})
 	return _c
@@ -91,22 +99,22 @@ func (_c *MockLocationRepository_CountByMapId_Call) Return(n int64, err error) *
 	return _c
 }
 
-func (_c *MockLocationRepository_CountByMapId_Call) RunAndReturn(run func(mapId string) (int64, error)) *MockLocationRepository_CountByMapId_Call {
+func (_c *MockLocationRepository_CountByMapId_Call) RunAndReturn(run func(ctx context.Context, mapId string) (int64, error)) *MockLocationRepository_CountByMapId_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // Create provides a mock function for the type MockLocationRepository
-func (_mock *MockLocationRepository) Create(l *entities.Location) error {
-	ret := _mock.Called(l)
+func (_mock *MockLocationRepository) Create(ctx context.Context, l *entities.Location) error {
+	ret := _mock.Called(ctx, l)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Create")
 	}
 
 	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(*entities.Location) error); ok {
-		r0 = returnFunc(l)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *entities.Location) error); ok {
+		r0 = returnFunc(ctx, l)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -119,19 +127,25 @@ type MockLocationRepository_Create_Call struct {
 }
 
 // Create is a helper method to define mock.On call
+//   - ctx context.Context
 //   - l *entities.Location
-func (_e *MockLocationRepository_Expecter) Create(l interface{}) *MockLocationRepository_Create_Call {
-	return &MockLocationRepository_Create_Call{Call: _e.mock.On("Create", l)}
+func (_e *MockLocationRepository_Expecter) Create(ctx interface{}, l interface{}) *MockLocationRepository_Create_Call {
+	return &MockLocationRepository_Create_Call{Call: _e.mock.On("Create", ctx, l)}
 }
 
-func (_c *MockLocationRepository_Create_Call) Run(run func(l *entities.Location)) *MockLocationRepository_Create_Call {
+func (_c *MockLocationRepository_Create_Call) Run(run func(ctx context.Context, l *entities.Location)) *MockLocationRepository_Create_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 *entities.Location
+		var arg0 context.Context
 		if args[0] != nil {
-			arg0 = args[0].(*entities.Location)
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 *entities.Location
+		if args[1] != nil {
+			arg1 = args[1].(*entities.Location)
 		}
 		run(
 			arg0,
+			arg1,
 		)
 	})
 	return _c
@@ -142,7 +156,7 @@ func (_c *MockLocationRepository_Create_Call) Return(err error) *MockLocationRep
 	return _c
 }
 
-func (_c *MockLocationRepository_Create_Call) RunAndReturn(run func(l *entities.Location) error) *MockLocationRepository_Create_Call {
+func (_c *MockLocationRepository_Create_Call) RunAndReturn(run func(ctx context.Context, l *entities.Location) error) *MockLocationRepository_Create_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -175,16 +189,16 @@ func (_m *MockMapRepository) EXPECT() *MockMapRepository_Expecter {
 }
 
 // Create provides a mock function for the type MockMapRepository
-func (_mock *MockMapRepository) Create(m *entities.Map) error {
-	ret := _mock.Called(m)
+func (_mock *MockMapRepository) Create(ctx context.Context, m *entities.Map) error {
+	ret := _mock.Called(ctx, m)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Create")
 	}
 
 	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(*entities.Map) error); ok {
-		r0 = returnFunc(m)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *entities.Map) error); ok {
+		r0 = returnFunc(ctx, m)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -197,19 +211,25 @@ type MockMapRepository_Create_Call struct {
 }
 
 // Create is a helper method to define mock.On call
+//   - ctx context.Context
 //   - m *entities.Map
-func (_e *MockMapRepository_Expecter) Create(m interface{}) *MockMapRepository_Create_Call {
-	return &MockMapRepository_Create_Call{Call: _e.mock.On("Create", m)}
+func (_e *MockMapRepository_Expecter) Create(ctx interface{}, m interface{}) *MockMapRepository_Create_Call {
+	return &MockMapRepository_Create_Call{Call: _e.mock.On("Create", ctx, m)}
 }
 
-func (_c *MockMapRepository_Create_Call) Run(run func(m *entities.Map)) *MockMapRepository_Create_Call {
+func (_c *MockMapRepository_Create_Call) Run(run func(ctx context.Context, m *entities.Map)) *MockMapRepository_Create_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 *entities.Map
+		var arg0 context.Context
 		if args[0] != nil {
-			arg0 = args[0].(*entities.Map)
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 *entities.Map
+		if args[1] != nil {
+			arg1 = args[1].(*entities.Map)
 		}
 		run(
 			arg0,
+			arg1,
 		)
 	})
 	return _c
@@ -220,14 +240,14 @@ func (_c *MockMapRepository_Create_Call) Return(err error) *MockMapRepository_Cr
 	return _c
 }
 
-func (_c *MockMapRepository_Create_Call) RunAndReturn(run func(m *entities.Map) error) *MockMapRepository_Create_Call {
+func (_c *MockMapRepository_Create_Call) RunAndReturn(run func(ctx context.Context, m *entities.Map) error) *MockMapRepository_Create_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // FindByName provides a mock function for the type MockMapRepository
-func (_mock *MockMapRepository) FindByName(name string) (*entities.Map, error) {
-	ret := _mock.Called(name)
+func (_mock *MockMapRepository) FindByName(ctx context.Context, name string) (*entities.Map, error) {
+	ret := _mock.Called(ctx, name)
 
 	if len(ret) == 0 {
 		panic("no return value specified for FindByName")
@@ -235,18 +255,18 @@ func (_mock *MockMapRepository) FindByName(name string) (*entities.Map, error) {
 
 	var r0 *entities.Map
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(string) (*entities.Map, error)); ok {
-		return returnFunc(name)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (*entities.Map, error)); ok {
+		return returnFunc(ctx, name)
 	}
-	if returnFunc, ok := ret.Get(0).(func(string) *entities.Map); ok {
-		r0 = returnFunc(name)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) *entities.Map); ok {
+		r0 = returnFunc(ctx, name)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*entities.Map)
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(string) error); ok {
-		r1 = returnFunc(name)
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = returnFunc(ctx, name)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -259,19 +279,25 @@ type MockMapRepository_FindByName_Call struct {
 }
 
 // FindByName is a helper method to define mock.On call
+//   - ctx context.Context
 //   - name string
-func (_e *MockMapRepository_Expecter) FindByName(name interface{}) *MockMapRepository_FindByName_Call {
-	return &MockMapRepository_FindByName_Call{Call: _e.mock.On("FindByName", name)}
+func (_e *MockMapRepository_Expecter) FindByName(ctx interface{}, name interface{}) *MockMapRepository_FindByName_Call {
+	return &MockMapRepository_FindByName_Call{Call: _e.mock.On("FindByName", ctx, name)}
 }
 
-func (_c *MockMapRepository_FindByName_Call) Run(run func(name string)) *MockMapRepository_FindByName_Call {
+func (_c *MockMapRepository_FindByName_Call) Run(run func(ctx context.Context, name string)) *MockMapRepository_FindByName_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 string
+		var arg0 context.Context
 		if args[0] != nil {
-			arg0 = args[0].(string)
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 string
+		if args[1] != nil {
+			arg1 = args[1].(string)
 		}
 		run(
 			arg0,
+			arg1,
 		)
 	})
 	return _c
@@ -282,7 +308,7 @@ func (_c *MockMapRepository_FindByName_Call) Return(mapParam *entities.Map, err 
 	return _c
 }
 
-func (_c *MockMapRepository_FindByName_Call) RunAndReturn(run func(name string) (*entities.Map, error)) *MockMapRepository_FindByName_Call {
+func (_c *MockMapRepository_FindByName_Call) RunAndReturn(run func(ctx context.Context, name string) (*entities.Map, error)) *MockMapRepository_FindByName_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -315,16 +341,16 @@ func (_m *MockRefreshTokenRepository) EXPECT() *MockRefreshTokenRepository_Expec
 }
 
 // Create provides a mock function for the type MockRefreshTokenRepository
-func (_mock *MockRefreshTokenRepository) Create(refreshToken *entities.RefreshToken) error {
-	ret := _mock.Called(refreshToken)
+func (_mock *MockRefreshTokenRepository) Create(ctx context.Context, refreshToken *entities.RefreshToken) error {
+	ret := _mock.Called(ctx, refreshToken)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Create")
 	}
 
 	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(*entities.RefreshToken) error); ok {
-		r0 = returnFunc(refreshToken)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *entities.RefreshToken) error); ok {
+		r0 = returnFunc(ctx, refreshToken)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -337,19 +363,25 @@ type MockRefreshTokenRepository_Create_Call struct {
 }
 
 // Create is a helper method to define mock.On call
+//   - ctx context.Context
 //   - refreshToken *entities.RefreshToken
-func (_e *MockRefreshTokenRepository_Expecter) Create(refreshToken interface{}) *MockRefreshTokenRepository_Create_Call {
-	return &MockRefreshTokenRepository_Create_Call{Call: _e.mock.On("Create", refreshToken)}
+func (_e *MockRefreshTokenRepository_Expecter) Create(ctx interface{}, refreshToken interface{}) *MockRefreshTokenRepository_Create_Call {
+	return &MockRefreshTokenRepository_Create_Call{Call: _e.mock.On("Create", ctx, refreshToken)}
 }
 
-func (_c *MockRefreshTokenRepository_Create_Call) Run(run func(refreshToken *entities.RefreshToken)) *MockRefreshTokenRepository_Create_Call {
+func (_c *MockRefreshTokenRepository_Create_Call) Run(run func(ctx context.Context, refreshToken *entities.RefreshToken)) *MockRefreshTokenRepository_Create_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 *entities.RefreshToken
+		var arg0 context.Context
 		if args[0] != nil {
-			arg0 = args[0].(*entities.RefreshToken)
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 *entities.RefreshToken
+		if args[1] != nil {
+			arg1 = args[1].(*entities.RefreshToken)
 		}
 		run(
 			arg0,
+			arg1,
 		)
 	})
 	return _c
@@ -360,14 +392,14 @@ func (_c *MockRefreshTokenRepository_Create_Call) Return(err error) *MockRefresh
 	return _c
 }
 
-func (_c *MockRefreshTokenRepository_Create_Call) RunAndReturn(run func(refreshToken *entities.RefreshToken) error) *MockRefreshTokenRepository_Create_Call {
+func (_c *MockRefreshTokenRepository_Create_Call) RunAndReturn(run func(ctx context.Context, refreshToken *entities.RefreshToken) error) *MockRefreshTokenRepository_Create_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // FindById provides a mock function for the type MockRefreshTokenRepository
-func (_mock *MockRefreshTokenRepository) FindById(id string) (*entities.RefreshToken, error) {
-	ret := _mock.Called(id)
+func (_mock *MockRefreshTokenRepository) FindById(ctx context.Context, id string) (*entities.RefreshToken, error) {
+	ret := _mock.Called(ctx, id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for FindById")
@@ -375,18 +407,18 @@ func (_mock *MockRefreshTokenRepository) FindById(id string) (*entities.RefreshT
 
 	var r0 *entities.RefreshToken
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(string) (*entities.RefreshToken, error)); ok {
-		return returnFunc(id)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (*entities.RefreshToken, error)); ok {
+		return returnFunc(ctx, id)
 	}
-	if returnFunc, ok := ret.Get(0).(func(string) *entities.RefreshToken); ok {
-		r0 = returnFunc(id)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) *entities.RefreshToken); ok {
+		r0 = returnFunc(ctx, id)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*entities.RefreshToken)
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(string) error); ok {
-		r1 = returnFunc(id)
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = returnFunc(ctx, id)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -399,19 +431,25 @@ type MockRefreshTokenRepository_FindById_Call struct {
 }
 
 // FindById is a helper method to define mock.On call
+//   - ctx context.Context
 //   - id string
-func (_e *MockRefreshTokenRepository_Expecter) FindById(id interface{}) *MockRefreshTokenRepository_FindById_Call {
-	return &MockRefreshTokenRepository_FindById_Call{Call: _e.mock.On("FindById", id)}
+func (_e *MockRefreshTokenRepository_Expecter) FindById(ctx interface{}, id interface{}) *MockRefreshTokenRepository_FindById_Call {
+	return &MockRefreshTokenRepository_FindById_Call{Call: _e.mock.On("FindById", ctx, id)}
 }
 
-func (_c *MockRefreshTokenRepository_FindById_Call) Run(run func(id string)) *MockRefreshTokenRepository_FindById_Call {
+func (_c *MockRefreshTokenRepository_FindById_Call) Run(run func(ctx context.Context, id string)) *MockRefreshTokenRepository_FindById_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 string
+		var arg0 context.Context
 		if args[0] != nil {
-			arg0 = args[0].(string)
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 string
+		if args[1] != nil {
+			arg1 = args[1].(string)
 		}
 		run(
 			arg0,
+			arg1,
 		)
 	})
 	return _c
@@ -422,22 +460,22 @@ func (_c *MockRefreshTokenRepository_FindById_Call) Return(refreshToken *entitie
 	return _c
 }
 
-func (_c *MockRefreshTokenRepository_FindById_Call) RunAndReturn(run func(id string) (*entities.RefreshToken, error)) *MockRefreshTokenRepository_FindById_Call {
+func (_c *MockRefreshTokenRepository_FindById_Call) RunAndReturn(run func(ctx context.Context, id string) (*entities.RefreshToken, error)) *MockRefreshTokenRepository_FindById_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // Update provides a mock function for the type MockRefreshTokenRepository
-func (_mock *MockRefreshTokenRepository) Update(refreshToken *entities.RefreshToken) error {
-	ret := _mock.Called(refreshToken)
+func (_mock *MockRefreshTokenRepository) Update(ctx context.Context, refreshToken *entities.RefreshToken) error {
+	ret := _mock.Called(ctx, refreshToken)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Update")
 	}
 
 	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(*entities.RefreshToken) error); ok {
-		r0 = returnFunc(refreshToken)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *entities.RefreshToken) error); ok {
+		r0 = returnFunc(ctx, refreshToken)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -450,19 +488,25 @@ type MockRefreshTokenRepository_Update_Call struct {
 }
 
 // Update is a helper method to define mock.On call
+//   - ctx context.Context
 //   - refreshToken *entities.RefreshToken
-func (_e *MockRefreshTokenRepository_Expecter) Update(refreshToken interface{}) *MockRefreshTokenRepository_Update_Call {
-	return &MockRefreshTokenRepository_Update_Call{Call: _e.mock.On("Update", refreshToken)}
+func (_e *MockRefreshTokenRepository_Expecter) Update(ctx interface{}, refreshToken interface{}) *MockRefreshTokenRepository_Update_Call {
+	return &MockRefreshTokenRepository_Update_Call{Call: _e.mock.On("Update", ctx, refreshToken)}
 }
 
-func (_c *MockRefreshTokenRepository_Update_Call) Run(run func(refreshToken *entities.RefreshToken)) *MockRefreshTokenRepository_Update_Call {
+func (_c *MockRefreshTokenRepository_Update_Call) Run(run func(ctx context.Context, refreshToken *entities.RefreshToken)) *MockRefreshTokenRepository_Update_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 *entities.RefreshToken
+		var arg0 context.Context
 		if args[0] != nil {
-			arg0 = args[0].(*entities.RefreshToken)
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 *entities.RefreshToken
+		if args[1] != nil {
+			arg1 = args[1].(*entities.RefreshToken)
 		}
 		run(
 			arg0,
+			arg1,
 		)
 	})
 	return _c
@@ -473,7 +517,7 @@ func (_c *MockRefreshTokenRepository_Update_Call) Return(err error) *MockRefresh
 	return _c
 }
 
-func (_c *MockRefreshTokenRepository_Update_Call) RunAndReturn(run func(refreshToken *entities.RefreshToken) error) *MockRefreshTokenRepository_Update_Call {
+func (_c *MockRefreshTokenRepository_Update_Call) RunAndReturn(run func(ctx context.Context, refreshToken *entities.RefreshToken) error) *MockRefreshTokenRepository_Update_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -506,16 +550,16 @@ func (_m *MockUserRepository) EXPECT() *MockUserRepository_Expecter {
 }
 
 // Create provides a mock function for the type MockUserRepository
-func (_mock *MockUserRepository) Create(user *entities.User) error {
-	ret := _mock.Called(user)
+func (_mock *MockUserRepository) Create(ctx context.Context, user *entities.User) error {
+	ret := _mock.Called(ctx, user)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Create")
 	}
 
 	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(*entities.User) error); ok {
-		r0 = returnFunc(user)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *entities.User) error); ok {
+		r0 = returnFunc(ctx, user)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -528,19 +572,25 @@ type MockUserRepository_Create_Call struct {
 }
 
 // Create is a helper method to define mock.On call
+//   - ctx context.Context
 //   - user *entities.User
-func (_e *MockUserRepository_Expecter) Create(user interface{}) *MockUserRepository_Create_Call {
-	return &MockUserRepository_Create_Call{Call: _e.mock.On("Create", user)}
+func (_e *MockUserRepository_Expecter) Create(ctx interface{}, user interface{}) *MockUserRepository_Create_Call {
+	return &MockUserRepository_Create_Call{Call: _e.mock.On("Create", ctx, user)}
 }
 
-func (_c *MockUserRepository_Create_Call) Run(run func(user *entities.User)) *MockUserRepository_Create_Call {
+func (_c *MockUserRepository_Create_Call) Run(run func(ctx context.Context, user *entities.User)) *MockUserRepository_Create_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 *entities.User
+		var arg0 context.Context
 		if args[0] != nil {
-			arg0 = args[0].(*entities.User)
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 *entities.User
+		if args[1] != nil {
+			arg1 = args[1].(*entities.User)
 		}
 		run(
 			arg0,
+			arg1,
 		)
 	})
 	return _c
@@ -551,14 +601,14 @@ func (_c *MockUserRepository_Create_Call) Return(err error) *MockUserRepository_
 	return _c
 }
 
-func (_c *MockUserRepository_Create_Call) RunAndReturn(run func(user *entities.User) error) *MockUserRepository_Create_Call {
+func (_c *MockUserRepository_Create_Call) RunAndReturn(run func(ctx context.Context, user *entities.User) error) *MockUserRepository_Create_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // FindByEmail provides a mock function for the type MockUserRepository
-func (_mock *MockUserRepository) FindByEmail(email string) (*entities.User, error) {
-	ret := _mock.Called(email)
+func (_mock *MockUserRepository) FindByEmail(ctx context.Context, email string) (*entities.User, error) {
+	ret := _mock.Called(ctx, email)
 
 	if len(ret) == 0 {
 		panic("no return value specified for FindByEmail")
@@ -566,18 +616,18 @@ func (_mock *MockUserRepository) FindByEmail(email string) (*entities.User, erro
 
 	var r0 *entities.User
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(string) (*entities.User, error)); ok {
-		return returnFunc(email)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (*entities.User, error)); ok {
+		return returnFunc(ctx, email)
 	}
-	if returnFunc, ok := ret.Get(0).(func(string) *entities.User); ok {
-		r0 = returnFunc(email)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) *entities.User); ok {
+		r0 = returnFunc(ctx, email)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*entities.User)
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(string) error); ok {
-		r1 = returnFunc(email)
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = returnFunc(ctx, email)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -590,19 +640,25 @@ type MockUserRepository_FindByEmail_Call struct {
 }
 
 // FindByEmail is a helper method to define mock.On call
+//   - ctx context.Context
 //   - email string
-func (_e *MockUserRepository_Expecter) FindByEmail(email interface{}) *MockUserRepository_FindByEmail_Call {
-	return &MockUserRepository_FindByEmail_Call{Call: _e.mock.On("FindByEmail", email)}
+func (_e *MockUserRepository_Expecter) FindByEmail(ctx interface{}, email interface{}) *MockUserRepository_FindByEmail_Call {
+	return &MockUserRepository_FindByEmail_Call{Call: _e.mock.On("FindByEmail", ctx, email)}
 }
 
-func (_c *MockUserRepository_FindByEmail_Call) Run(run func(email string)) *MockUserRepository_FindByEmail_Call {
+func (_c *MockUserRepository_FindByEmail_Call) Run(run func(ctx context.Context, email string)) *MockUserRepository_FindByEmail_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 string
+		var arg0 context.Context
 		if args[0] != nil {
-			arg0 = args[0].(string)
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 string
+		if args[1] != nil {
+			arg1 = args[1].(string)
 		}
 		run(
 			arg0,
+			arg1,
 		)
 	})
 	return _c
@@ -613,14 +669,14 @@ func (_c *MockUserRepository_FindByEmail_Call) Return(user *entities.User, err e
 	return _c
 }
 
-func (_c *MockUserRepository_FindByEmail_Call) RunAndReturn(run func(email string) (*entities.User, error)) *MockUserRepository_FindByEmail_Call {
+func (_c *MockUserRepository_FindByEmail_Call) RunAndReturn(run func(ctx context.Context, email string) (*entities.User, error)) *MockUserRepository_FindByEmail_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // FindById provides a mock function for the type MockUserRepository
-func (_mock *MockUserRepository) FindById(id string) (*entities.User, error) {
-	ret := _mock.Called(id)
+func (_mock *MockUserRepository) FindById(ctx context.Context, id string) (*entities.User, error) {
+	ret := _mock.Called(ctx, id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for FindById")
@@ -628,18 +684,18 @@ func (_mock *MockUserRepository) FindById(id string) (*entities.User, error) {
 
 	var r0 *entities.User
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(string) (*entities.User, error)); ok {
-		return returnFunc(id)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (*entities.User, error)); ok {
+		return returnFunc(ctx, id)
 	}
-	if returnFunc, ok := ret.Get(0).(func(string) *entities.User); ok {
-		r0 = returnFunc(id)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) *entities.User); ok {
+		r0 = returnFunc(ctx, id)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*entities.User)
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(string) error); ok {
-		r1 = returnFunc(id)
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = returnFunc(ctx, id)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -652,19 +708,25 @@ type MockUserRepository_FindById_Call struct {
 }
 
 // FindById is a helper method to define mock.On call
+//   - ctx context.Context
 //   - id string
-func (_e *MockUserRepository_Expecter) FindById(id interface{}) *MockUserRepository_FindById_Call {
-	return &MockUserRepository_FindById_Call{Call: _e.mock.On("FindById", id)}
+func (_e *MockUserRepository_Expecter) FindById(ctx interface{}, id interface{}) *MockUserRepository_FindById_Call {
+	return &MockUserRepository_FindById_Call{Call: _e.mock.On("FindById", ctx, id)}
 }
 
-func (_c *MockUserRepository_FindById_Call) Run(run func(id string)) *MockUserRepository_FindById_Call {
+func (_c *MockUserRepository_FindById_Call) Run(run func(ctx context.Context, id string)) *MockUserRepository_FindById_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 string
+		var arg0 context.Context
 		if args[0] != nil {
-			arg0 = args[0].(string)
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 string
+		if args[1] != nil {
+			arg1 = args[1].(string)
 		}
 		run(
 			arg0,
+			arg1,
 		)
 	})
 	return _c
@@ -675,14 +737,14 @@ func (_c *MockUserRepository_FindById_Call) Return(user *entities.User, err erro
 	return _c
 }
 
-func (_c *MockUserRepository_FindById_Call) RunAndReturn(run func(id string) (*entities.User, error)) *MockUserRepository_FindById_Call {
+func (_c *MockUserRepository_FindById_Call) RunAndReturn(run func(ctx context.Context, id string) (*entities.User, error)) *MockUserRepository_FindById_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // FindByUsername provides a mock function for the type MockUserRepository
-func (_mock *MockUserRepository) FindByUsername(username string) (*entities.User, error) {
-	ret := _mock.Called(username)
+func (_mock *MockUserRepository) FindByUsername(ctx context.Context, username string) (*entities.User, error) {
+	ret := _mock.Called(ctx, username)
 
 	if len(ret) == 0 {
 		panic("no return value specified for FindByUsername")
@@ -690,18 +752,18 @@ func (_mock *MockUserRepository) FindByUsername(username string) (*entities.User
 
 	var r0 *entities.User
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(string) (*entities.User, error)); ok {
-		return returnFunc(username)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (*entities.User, error)); ok {
+		return returnFunc(ctx, username)
 	}
-	if returnFunc, ok := ret.Get(0).(func(string) *entities.User); ok {
-		r0 = returnFunc(username)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) *entities.User); ok {
+		r0 = returnFunc(ctx, username)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*entities.User)
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(string) error); ok {
-		r1 = returnFunc(username)
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = returnFunc(ctx, username)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -714,19 +776,25 @@ type MockUserRepository_FindByUsername_Call struct {
 }
 
 // FindByUsername is a helper method to define mock.On call
+//   - ctx context.Context
 //   - username string
-func (_e *MockUserRepository_Expecter) FindByUsername(username interface{}) *MockUserRepository_FindByUsername_Call {
-	return &MockUserRepository_FindByUsername_Call{Call: _e.mock.On("FindByUsername", username)}
+func (_e *MockUserRepository_Expecter) FindByUsername(ctx interface{}, username interface{}) *MockUserRepository_FindByUsername_Call {
+	return &MockUserRepository_FindByUsername_Call{Call: _e.mock.On("FindByUsername", ctx, username)}
 }
 
-func (_c *MockUserRepository_FindByUsername_Call) Run(run func(username string)) *MockUserRepository_FindByUsername_Call {
+func (_c *MockUserRepository_FindByUsername_Call) Run(run func(ctx context.Context, username string)) *MockUserRepository_FindByUsername_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 string
+		var arg0 context.Context
 		if args[0] != nil {
-			arg0 = args[0].(string)
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 string
+		if args[1] != nil {
+			arg1 = args[1].(string)
 		}
 		run(
 			arg0,
+			arg1,
 		)
 	})
 	return _c
@@ -737,7 +805,7 @@ func (_c *MockUserRepository_FindByUsername_Call) Return(user *entities.User, er
 	return _c
 }
 
-func (_c *MockUserRepository_FindByUsername_Call) RunAndReturn(run func(username string) (*entities.User, error)) *MockUserRepository_FindByUsername_Call {
+func (_c *MockUserRepository_FindByUsername_Call) RunAndReturn(run func(ctx context.Context, username string) (*entities.User, error)) *MockUserRepository_FindByUsername_Call {
 	_c.Call.Return(run)
 	return _c
 }

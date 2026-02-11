@@ -1,6 +1,7 @@
 package user
 
 import (
+	"context"
 	"time"
 
 	"github.com/mvcris/maya-guessr/backend/internal/core/entities"
@@ -33,7 +34,9 @@ func NewCreateUserUseCase(userRepository repositories.UserRepository) *CreateUse
 }
 
 func (uc *CreateUserUseCase) Execute(input CreateUserInput) (CreateUserOutput, error) {
-	existingUserByEmail, err := uc.userRepository.FindByEmail(input.Email)
+	ctx := context.Background()
+
+	existingUserByEmail, err := uc.userRepository.FindByEmail(ctx, input.Email)
 	if err != nil {
 		return CreateUserOutput{}, err
 	}
@@ -41,19 +44,19 @@ func (uc *CreateUserUseCase) Execute(input CreateUserInput) (CreateUserOutput, e
 		return CreateUserOutput{}, coreerrors.Conflict("user with email already exists")
 	}
 
-	existingUserByUsername, err := uc.userRepository.FindByUsername(input.Username)
+	existingUserByUsername, err := uc.userRepository.FindByUsername(ctx, input.Username)
 	if err != nil {
 		return CreateUserOutput{}, err
 	}
 	if existingUserByUsername != nil {
 		return CreateUserOutput{}, coreerrors.Conflict("user with username already exists")
 	}
-	
+
 	newUser := entities.NewUser(input.Name, input.Email, input.Username, input.Password)
 	if err := newUser.EncryptPassword(); err != nil {
 		return CreateUserOutput{}, err
 	}
-	if err := uc.userRepository.Create(newUser); err != nil {
+	if err := uc.userRepository.Create(ctx, newUser); err != nil {
 		return CreateUserOutput{}, err
 	}
 	return CreateUserOutput{

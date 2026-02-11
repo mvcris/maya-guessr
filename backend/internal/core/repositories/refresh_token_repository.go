@@ -1,9 +1,13 @@
 package repositories
 
-import "github.com/mvcris/maya-guessr/backend/internal/core/entities"
+import (
+	"context"
+
+	"github.com/mvcris/maya-guessr/backend/internal/core/entities"
+)
 
 type RefreshTokenRepository interface {
-	Create(refreshToken *entities.RefreshToken) error
-	FindById(id string) (*entities.RefreshToken, error)
-	Update(refreshToken *entities.RefreshToken) error
+	Create(ctx context.Context, refreshToken *entities.RefreshToken) error
+	FindById(ctx context.Context, id string) (*entities.RefreshToken, error)
+	Update(ctx context.Context, refreshToken *entities.RefreshToken) error
 }
