@@ -20,9 +20,9 @@ func NewMapPgRepository(db *gorm.DB) repositories.MapRepository {
 
 func (r *MapPgRepository) getDB(ctx context.Context) *gorm.DB {
 	if tx, ok := localgorm.ExtractTx(ctx); ok {
-		return tx
+		return tx.WithContext(ctx)
 	}
-	return r.db
+	return r.db.WithContext(ctx)
 }
 
 func (r *MapPgRepository) Create(ctx context.Context, m *entities.Map) error {

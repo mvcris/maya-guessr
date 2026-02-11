@@ -20,9 +20,9 @@ func NewUserPgRepository(db *gorm.DB) repositories.UserRepository {
 
 func (r *UserPgRepository) getDB(ctx context.Context) *gorm.DB {
 	if tx, ok := localgorm.ExtractTx(ctx); ok {
-		return tx
+		return tx.WithContext(ctx)
 	}
-	return r.db
+	return r.db.WithContext(ctx)
 }
 
 func (r *UserPgRepository) Create(ctx context.Context, user *entities.User) error {

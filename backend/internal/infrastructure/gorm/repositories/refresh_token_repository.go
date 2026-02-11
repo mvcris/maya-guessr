@@ -20,9 +20,9 @@ func NewRefreshTokenPgRepository(db *gorm.DB) repositories.RefreshTokenRepositor
 
 func (r *RefreshTokenPgRepository) getDB(ctx context.Context) *gorm.DB {
 	if tx, ok := localgorm.ExtractTx(ctx); ok {
-		return tx
+		return tx.WithContext(ctx)
 	}
-	return r.db
+	return r.db.WithContext(ctx)
 }
 
 func (r *RefreshTokenPgRepository) Create(ctx context.Context, refreshToken *entities.RefreshToken) error {

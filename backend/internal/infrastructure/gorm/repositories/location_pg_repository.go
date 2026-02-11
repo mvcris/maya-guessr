@@ -19,9 +19,9 @@ func NewLocationPgRepository(db *gorm.DB) repositories.LocationRepository {
 
 func (r *LocationPgRepository) getDB(ctx context.Context) *gorm.DB {
 	if tx, ok := localgorm.ExtractTx(ctx); ok {
-		return tx
+		return tx.WithContext(ctx)
 	}
-	return r.db
+	return r.db.WithContext(ctx)
 }
 
 func (r *LocationPgRepository) Create(ctx context.Context, l *entities.Location) error {
