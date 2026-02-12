@@ -35,3 +35,11 @@ func (r *LocationPgRepository) CountByMapId(ctx context.Context, mapId string) (
 	}
 	return count, nil
 }
+
+func (r *LocationPgRepository) FindRandomLocationByMapId(ctx context.Context, mapId string, quantity int) ([]*entities.Location, error) {
+	var locations []*entities.Location
+	if err := r.getDB(ctx).Where("map_id = ?", mapId).Order("RANDOM()").Limit(quantity).Find(&locations).Error; err != nil {
+		return nil, err
+	}
+	return locations, nil
+}

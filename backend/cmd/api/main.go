@@ -33,6 +33,10 @@ func main() {
 	mapHandler := handlers.NewMapHandler(db, router)
 	mapHandler.SetupRoutes()
 
+	// single player routes
+	singlePlayerHandler := handlers.NewSinglePlayerHandler(db, router)
+	singlePlayerHandler.SetupRoutes()
+
 	if err := router.Run(":8080"); err != nil {
 		log.Fatalf("failed to start server: %v", err)
 	}
