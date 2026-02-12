@@ -13,7 +13,7 @@ func NewConnection(dsn string) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = db.AutoMigrate(&entities.User{}, &entities.RefreshToken{}, &entities.Map{}, &entities.Location{})
+	err = db.AutoMigrate(&entities.User{}, &entities.RefreshToken{}, &entities.Map{}, &entities.Location{}, &entities.SinglePlayerGame{}, &entities.SinglePlayerRound{})
 	if err != nil {
 		return nil, err
 	}

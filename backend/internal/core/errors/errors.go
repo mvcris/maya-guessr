@@ -50,6 +50,10 @@ func BadRequest(message string) HTTPStatusCoder {
 	return &domainError{message: message, status: 400}
 }
 
+func InternalServerError(message string) HTTPStatusCoder {
+	return &domainError{message: message, status: 500}
+}
+
 // Validation returns an error with HTTP status 400 for validation failures.
 // If details is nil or empty, message is used as the single error message.
 func Validation(message string, details map[string]string) HTTPStatusCoder {
