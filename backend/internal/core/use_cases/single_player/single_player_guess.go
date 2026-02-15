@@ -95,13 +95,12 @@ func (uc *SinglePlayerGuessUseCase) Execute(ctx context.Context, input SinglePla
 		if !round.IsInProgress() {
 			return coreerrors.BadRequest("round is not in progress")
 		}
-
-		var distance float64
-		var score int
-		if round.Location != nil {
-			distance = uc.geoService.CalculateDistance(round.Location.Latitude, round.Location.Longitude, input.GuessLatitude, input.GuessLongitude)
-			score = uc.geoService.CalculateScoreFromDistance(distance)
+		if round.Location == nil {
+			return coreerrors.InternalServerError("round location is missing")
 		}
+
+		distance := uc.geoService.CalculateDistance(round.Location.Latitude, round.Location.Longitude, input.GuessLatitude, input.GuessLongitude)
+		score := uc.geoService.CalculateScoreFromDistance(distance)
 		round.ApplyGuess(input.GuessLatitude, input.GuessLongitude, distance, score)
 		if err := round.Finish(); err != nil {
 			return err
@@ -112,8 +111,11 @@ func (uc *SinglePlayerGuessUseCase) Execute(ctx context.Context, input SinglePla
 
 		game.AddScore(round.Score)
 
+		if round.RoundNumber != game.CurrentRound {
+			return coreerrors.BadRequest("round is not current")
+		}
 		if game.HasNextRound() {
-			nextRoundNumber := game.CurrentRound + 1
+			nextRoundNumber := round.RoundNumber + 1
 			nextRound, err := uc.roundRepository.FindByGameIdAndRoundNumberWithLock(ctx, game.ID, nextRoundNumber)
 			if err != nil {
 				return err

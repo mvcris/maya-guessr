@@ -86,6 +86,9 @@ func (g *SinglePlayerGame) HasNextRound() bool {
 }
 
 func (g *SinglePlayerGame) AdvanceRound() error {
+	if g.Status != SinglePlayerGameStatusInProgress {
+		return coreerrors.BadRequest("game is not in progress")
+	}
 	if g.CurrentRound >= g.TotalRounds {
 		return coreerrors.BadRequest("game is already completed")
 	}
