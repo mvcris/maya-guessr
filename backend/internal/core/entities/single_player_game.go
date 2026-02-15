@@ -81,6 +81,36 @@ func (g *SinglePlayerGame) IsInProgress() bool {
 	return g.Status == SinglePlayerGameStatusInProgress
 }
 
+func (g *SinglePlayerGame) HasNextRound() bool {
+	return g.CurrentRound < g.TotalRounds
+}
+
+func (g *SinglePlayerGame) AdvanceRound() error {
+	if g.CurrentRound >= g.TotalRounds {
+		return coreerrors.BadRequest("game is already completed")
+	}
+	g.CurrentRound++
+	return nil
+}
+
+func (g *SinglePlayerGame) AddScore(score int) {
+	if score < 0 {
+		return
+	}
+	g.Score += score
+}
+
+func (g *SinglePlayerGame) Complete() error {
+	if g.Status != SinglePlayerGameStatusInProgress {
+		return coreerrors.BadRequest("game is not in progress")
+	}
+
+	g.Status = SinglePlayerGameStatusCompleted
+	now := time.Now()
+	g.EndedAt = &now
+	return nil
+}
+
 func (g *SinglePlayerGame) StartNextRound() (*SinglePlayerRound, error) {
 	if !g.IsInProgress() {
 		return nil, coreerrors.BadRequest("game is not in progress")
