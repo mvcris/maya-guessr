@@ -680,6 +680,80 @@ func (_c *MockSinglePlayerGameRepository_Create_Call) RunAndReturn(run func(ctx 
 	return _c
 }
 
+// FindByIdAndUserIdWithLock provides a mock function for the type MockSinglePlayerGameRepository
+func (_mock *MockSinglePlayerGameRepository) FindByIdAndUserIdWithLock(ctx context.Context, id string, userId string) (*entities.SinglePlayerGame, error) {
+	ret := _mock.Called(ctx, id, userId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for FindByIdAndUserIdWithLock")
+	}
+
+	var r0 *entities.SinglePlayerGame
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string) (*entities.SinglePlayerGame, error)); ok {
+		return returnFunc(ctx, id, userId)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string) *entities.SinglePlayerGame); ok {
+		r0 = returnFunc(ctx, id, userId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*entities.SinglePlayerGame)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = returnFunc(ctx, id, userId)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockSinglePlayerGameRepository_FindByIdAndUserIdWithLock_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'FindByIdAndUserIdWithLock'
+type MockSinglePlayerGameRepository_FindByIdAndUserIdWithLock_Call struct {
+	*mock.Call
+}
+
+// FindByIdAndUserIdWithLock is a helper method to define mock.On call
+//   - ctx context.Context
+//   - id string
+//   - userId string
+func (_e *MockSinglePlayerGameRepository_Expecter) FindByIdAndUserIdWithLock(ctx interface{}, id interface{}, userId interface{}) *MockSinglePlayerGameRepository_FindByIdAndUserIdWithLock_Call {
+	return &MockSinglePlayerGameRepository_FindByIdAndUserIdWithLock_Call{Call: _e.mock.On("FindByIdAndUserIdWithLock", ctx, id, userId)}
+}
+
+func (_c *MockSinglePlayerGameRepository_FindByIdAndUserIdWithLock_Call) Run(run func(ctx context.Context, id string, userId string)) *MockSinglePlayerGameRepository_FindByIdAndUserIdWithLock_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 string
+		if args[1] != nil {
+			arg1 = args[1].(string)
+		}
+		var arg2 string
+		if args[2] != nil {
+			arg2 = args[2].(string)
+		}
+		run(
+			arg0,
+			arg1,
+			arg2,
+		)
+	})
+	return _c
+}
+
+func (_c *MockSinglePlayerGameRepository_FindByIdAndUserIdWithLock_Call) Return(singlePlayerGame *entities.SinglePlayerGame, err error) *MockSinglePlayerGameRepository_FindByIdAndUserIdWithLock_Call {
+	_c.Call.Return(singlePlayerGame, err)
+	return _c
+}
+
+func (_c *MockSinglePlayerGameRepository_FindByIdAndUserIdWithLock_Call) RunAndReturn(run func(ctx context.Context, id string, userId string) (*entities.SinglePlayerGame, error)) *MockSinglePlayerGameRepository_FindByIdAndUserIdWithLock_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // FindByUserIdAndStatuses provides a mock function for the type MockSinglePlayerGameRepository
 func (_mock *MockSinglePlayerGameRepository) FindByUserIdAndStatuses(ctx context.Context, userId string, statuses []entities.SinglePlayerGameStatus) (*entities.SinglePlayerGame, error) {
 	ret := _mock.Called(ctx, userId, statuses)
@@ -836,6 +910,154 @@ type MockSinglePlayerRoundRepository_Expecter struct {
 
 func (_m *MockSinglePlayerRoundRepository) EXPECT() *MockSinglePlayerRoundRepository_Expecter {
 	return &MockSinglePlayerRoundRepository_Expecter{mock: &_m.Mock}
+}
+
+// FindByGameIdAndRoundNumberWithLock provides a mock function for the type MockSinglePlayerRoundRepository
+func (_mock *MockSinglePlayerRoundRepository) FindByGameIdAndRoundNumberWithLock(ctx context.Context, gameId string, roundNumber int) (*entities.SinglePlayerRound, error) {
+	ret := _mock.Called(ctx, gameId, roundNumber)
+
+	if len(ret) == 0 {
+		panic("no return value specified for FindByGameIdAndRoundNumberWithLock")
+	}
+
+	var r0 *entities.SinglePlayerRound
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, int) (*entities.SinglePlayerRound, error)); ok {
+		return returnFunc(ctx, gameId, roundNumber)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, int) *entities.SinglePlayerRound); ok {
+		r0 = returnFunc(ctx, gameId, roundNumber)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*entities.SinglePlayerRound)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string, int) error); ok {
+		r1 = returnFunc(ctx, gameId, roundNumber)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockSinglePlayerRoundRepository_FindByGameIdAndRoundNumberWithLock_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'FindByGameIdAndRoundNumberWithLock'
+type MockSinglePlayerRoundRepository_FindByGameIdAndRoundNumberWithLock_Call struct {
+	*mock.Call
+}
+
+// FindByGameIdAndRoundNumberWithLock is a helper method to define mock.On call
+//   - ctx context.Context
+//   - gameId string
+//   - roundNumber int
+func (_e *MockSinglePlayerRoundRepository_Expecter) FindByGameIdAndRoundNumberWithLock(ctx interface{}, gameId interface{}, roundNumber interface{}) *MockSinglePlayerRoundRepository_FindByGameIdAndRoundNumberWithLock_Call {
+	return &MockSinglePlayerRoundRepository_FindByGameIdAndRoundNumberWithLock_Call{Call: _e.mock.On("FindByGameIdAndRoundNumberWithLock", ctx, gameId, roundNumber)}
+}
+
+func (_c *MockSinglePlayerRoundRepository_FindByGameIdAndRoundNumberWithLock_Call) Run(run func(ctx context.Context, gameId string, roundNumber int)) *MockSinglePlayerRoundRepository_FindByGameIdAndRoundNumberWithLock_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 string
+		if args[1] != nil {
+			arg1 = args[1].(string)
+		}
+		var arg2 int
+		if args[2] != nil {
+			arg2 = args[2].(int)
+		}
+		run(
+			arg0,
+			arg1,
+			arg2,
+		)
+	})
+	return _c
+}
+
+func (_c *MockSinglePlayerRoundRepository_FindByGameIdAndRoundNumberWithLock_Call) Return(singlePlayerRound *entities.SinglePlayerRound, err error) *MockSinglePlayerRoundRepository_FindByGameIdAndRoundNumberWithLock_Call {
+	_c.Call.Return(singlePlayerRound, err)
+	return _c
+}
+
+func (_c *MockSinglePlayerRoundRepository_FindByGameIdAndRoundNumberWithLock_Call) RunAndReturn(run func(ctx context.Context, gameId string, roundNumber int) (*entities.SinglePlayerRound, error)) *MockSinglePlayerRoundRepository_FindByGameIdAndRoundNumberWithLock_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// FindByIdAndGameIdWithLock provides a mock function for the type MockSinglePlayerRoundRepository
+func (_mock *MockSinglePlayerRoundRepository) FindByIdAndGameIdWithLock(ctx context.Context, id string, gameId string) (*entities.SinglePlayerRound, error) {
+	ret := _mock.Called(ctx, id, gameId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for FindByIdAndGameIdWithLock")
+	}
+
+	var r0 *entities.SinglePlayerRound
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string) (*entities.SinglePlayerRound, error)); ok {
+		return returnFunc(ctx, id, gameId)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string) *entities.SinglePlayerRound); ok {
+		r0 = returnFunc(ctx, id, gameId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*entities.SinglePlayerRound)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = returnFunc(ctx, id, gameId)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockSinglePlayerRoundRepository_FindByIdAndGameIdWithLock_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'FindByIdAndGameIdWithLock'
+type MockSinglePlayerRoundRepository_FindByIdAndGameIdWithLock_Call struct {
+	*mock.Call
+}
+
+// FindByIdAndGameIdWithLock is a helper method to define mock.On call
+//   - ctx context.Context
+//   - id string
+//   - gameId string
+func (_e *MockSinglePlayerRoundRepository_Expecter) FindByIdAndGameIdWithLock(ctx interface{}, id interface{}, gameId interface{}) *MockSinglePlayerRoundRepository_FindByIdAndGameIdWithLock_Call {
+	return &MockSinglePlayerRoundRepository_FindByIdAndGameIdWithLock_Call{Call: _e.mock.On("FindByIdAndGameIdWithLock", ctx, id, gameId)}
+}
+
+func (_c *MockSinglePlayerRoundRepository_FindByIdAndGameIdWithLock_Call) Run(run func(ctx context.Context, id string, gameId string)) *MockSinglePlayerRoundRepository_FindByIdAndGameIdWithLock_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 string
+		if args[1] != nil {
+			arg1 = args[1].(string)
+		}
+		var arg2 string
+		if args[2] != nil {
+			arg2 = args[2].(string)
+		}
+		run(
+			arg0,
+			arg1,
+			arg2,
+		)
+	})
+	return _c
+}
+
+func (_c *MockSinglePlayerRoundRepository_FindByIdAndGameIdWithLock_Call) Return(singlePlayerRound *entities.SinglePlayerRound, err error) *MockSinglePlayerRoundRepository_FindByIdAndGameIdWithLock_Call {
+	_c.Call.Return(singlePlayerRound, err)
+	return _c
+}
+
+func (_c *MockSinglePlayerRoundRepository_FindByIdAndGameIdWithLock_Call) RunAndReturn(run func(ctx context.Context, id string, gameId string) (*entities.SinglePlayerRound, error)) *MockSinglePlayerRoundRepository_FindByIdAndGameIdWithLock_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // Update provides a mock function for the type MockSinglePlayerRoundRepository

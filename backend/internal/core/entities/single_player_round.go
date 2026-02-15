@@ -57,3 +57,27 @@ func (r *SinglePlayerRound) Start() error {
 	r.StartedAt = &now
 	return nil
 }
+
+func (r *SinglePlayerRound) Finish() error {
+	if r.RoundStatus != SinglePlayerRoundStatusInProgress {
+		return coreerrors.BadRequest("round is not in progress")
+	}
+
+	r.RoundStatus = SinglePlayerRoundStatusCompleted
+	now := time.Now()
+	r.EndedAt = &now
+	return nil
+}
+
+func (r *SinglePlayerRound) IsInProgress() bool {
+	return r.RoundStatus == SinglePlayerRoundStatusInProgress
+}
+
+// ApplyGuess records the guess coordinates and the precomputed distance (meters) and score.
+// The caller (e.g., use case) must compute distance and score using its geo logic and pass them in.
+func (r *SinglePlayerRound) ApplyGuess(guessLatitude, guessLongitude float64, distance float64, score int) {
+	r.GuessLatitude = guessLatitude
+	r.GuessLongitude = guessLongitude
+	r.Distance = distance
+	r.Score = score
+}
